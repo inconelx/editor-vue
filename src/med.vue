@@ -1,16 +1,23 @@
 <template>
     <div class="outCover" :style="themeBack">
         <div class="detailOptions">
-            <button class="themeButton" @click="themeChange" :style="themeColor">◑</button>
-            <select v-model="lauguageMode" class="lauguageModeSelect" :style="themeColor">
+            <button class="theButton" @click="themeChange" :style="themeColor" style="width: 42px;">◑</button>
+            <select v-model="lauguageMode" class="theSelect" :style="themeColor" style="width: 120px;">
                 <option v-for="option in lauguageOptions" :value="option.value" :style="[themeBack, themeColor]">{{ option.text }}</option>
             </select>
+            <select v-model="tabSize" class="theSelect" :style="themeColor" style="width: 132px;">
+                <option v-for="option in tabSizeOptions" :value="option.value" :style="[themeBack, themeColor]">{{ option.text }}</option>
+            </select>
+            <select v-model="fontFamily" class="theSelect" :style="themeColor" style="width: 120px;">
+                <option v-for="option in fontFamilyOptions" :value="option.value" :style="[themeBack, themeColor]">{{ option.text }}</option>
+            </select>
+            <button class="theButton" @click="styleReset" :style="themeColor" style="width: 64px;">reset</button>
         </div>
         <div class="meditor">
             <div ref="rowList" class="rowNum" :style="dynamicStyles" v-html="rowNumText"></div>
             <div ref="editor" class="editor" :style="dynamicStyles">
                 <div ref="showText" class="Text show" :style="[dynamicStyles, themeColor]" v-html="inputText"></div>
-                <textarea ref="textarea" class="Text inputTextarea" spellcheck="false" @mousedown="mDown" @scroll="sMove" @keydown="specialKey" @input="onInput" @mousemove="mMove" @wheel="fontChange" :style="[dynamicStyles, themeCaretColor]"></textarea>
+                <textarea ref="textarea" class="Text inputTextarea" spellcheck="false" @mousedown="mDown" @scroll="sMove" @keydown="specialKey" @input="onInput" @mousemove="mMove" @blur="hidePrompt" @wheel="fontChange" :style="[dynamicStyles, themeCaretColor]"></textarea>
                 <select ref="promptBox" :class="{ 'blackBack': blackUsed, 'lightBack': !blackUsed }" class="promptBox" :style="[promptBoxStyles, themeColor, themeBack]" @click="submitPromptByClick" @keydown.enter="submitPromptByEnter" @keydown.esc="promptBoxHide" :size="selectSize" v-model="selectedOption">
                     <option v-for="option in options" :value="option.value" :style="[dynamicStyles, themeColor, themeBack]">{{ option.text }}</option>
                 </select>
@@ -54,6 +61,16 @@ export default {
                 { text: 'C', value: 'C' },
                 { text: 'JavaScript', value: 'JavaScript' },
                 { text: 'Markdown', value: 'Markdown' }
+            ],
+            fontFamilyOptions: [
+                { text: 'Consolas', value: 'Consolas' },
+                { text: 'Monaco', value: 'Monaco' },
+                { text: 'Courier', value: 'Courier' }
+            ],
+            tabSizeOptions: [
+                { text: 'tab width: 2', value: 2 },
+                { text: 'tab width: 4', value: 4 },
+                { text: 'tab width: 8', value: 8 },
             ],
             inputMouseX: 0,
             inputMouseY: 0,
@@ -570,6 +587,16 @@ export default {
         themeChange(){
             this.blackUsed = !this.blackUsed;
         },
+        hidePrompt(){
+            if(document.activeElement !== this.$refs.promptBox){
+                this.promptBoxHide();
+            }
+        },
+        styleReset(){
+            this.tabSize = 4;
+            this.fontSize = 32;
+            this.fontFamily = 'Consolas';
+        }
     },
     mounted() {
         this.$watch('lauguageMode', (newValue, oldValue) => {
@@ -596,31 +623,29 @@ export default {
     }
     .detailOptions{
         display: flex;
-        width: calc(100% - 6px);
+        width: 100%;
         height: 42px;
-        padding: 6px 0px 0px 6px;
+        padding: 6px 0px 0px 0px;
     }
-    .themeButton {
+    .theButton {
+        margin-left: 6px;
         background-color: rgba(0, 0, 0, 0);
         border: 1px solid;
         border-radius: 1px;
-        width: 42px;
         font-size: 20px;
     }
-    .themeButton:hover{
+    .theButton:hover{
         background-color: rgba(128, 128, 128, 0.25);
     }
-    .lauguageModeSelect{
+    .theSelect{
         margin-left: 6px;
         outline: none;
         border: 1px solid;
         border-radius: 1px;
-        width: 150px;
         background-color: rgba(0, 0, 0, 0);
         font-size: 20px;
-        font-family: 'Consolas';
     }
-    .lauguageModeSelect:hover{
+    .theSelect:hover{
         background-color: rgba(128, 128, 128, 0.25);
     }
     .meditor{
